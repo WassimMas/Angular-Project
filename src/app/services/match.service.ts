@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class MatchService {
-  matchUrl: string = 'http://localhost:3000';
+  matchUrl: string = 'http://localhost:3000/matches';
   constructor(private httpClient: HttpClient) {}
 
   getAllMatches() {
