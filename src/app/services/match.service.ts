@@ -9,19 +9,21 @@ export class MatchService {
   constructor(private httpClient: HttpClient) {}
 
   getAllMatches() {
-    return this.httpClient.get(this.matchUrl);
+    return this.httpClient.get<{ matches: any }>(this.matchUrl);
   }
   getMatchById(id: any) {
-    return this.httpClient.get(`${this.matchUrl}/${id}`);
+    return this.httpClient.get<{ match: any }>(`${this.matchUrl}/${id}`);
   }
   editMatch(obj: any) {
-    return this.httpClient.put(this.matchUrl, obj);
+    return this.httpClient.put<{ isUpdated: any }>(this.matchUrl, obj);
   }
   deleteMatch(id: any) {
-    return this.httpClient.delete(`${this.matchUrl}/${id}`);
+    return this.httpClient.delete<{ msg: any }>(`${this.matchUrl}/${id}`);
   }
   addMatch(obj: any) {
-    return this.httpClient.post(this.matchUrl, obj);
+    console.log('here add match into service', obj);
+
+    return this.httpClient.post<{ msg: any }>(this.matchUrl, obj);
   }
 
   searchMatch() {}

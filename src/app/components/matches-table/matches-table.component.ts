@@ -14,8 +14,7 @@ export class MatchesTableComponent implements OnInit {
   constructor(private router: Router, private matchService: MatchService) {}
 
   ngOnInit(): void {
-    this.matches = matchesData;
-    this.matchService.getAllMatches().subscribe();
+    this.getAllMatches();
   }
   goToDisplay(id: number) {
     this.router.navigate([`matchInfo/${id}`]);
@@ -25,6 +24,16 @@ export class MatchesTableComponent implements OnInit {
   }
   delete(id: number) {
     console.log(`here object number ${id} deleted`);
-    this.matchService.deleteMatch(id).subscribe();
+    this.matchService.deleteMatch(id).subscribe((res) => {
+      console.log('here response from component', res.msg);
+      this.getAllMatches();
+    });
+  }
+
+  getAllMatches() {
+    this.matchService.getAllMatches().subscribe((response) => {
+      console.log('here response from BE', response);
+      this.matches = response.matches;
+    });
   }
 }

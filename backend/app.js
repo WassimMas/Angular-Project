@@ -6,6 +6,13 @@ const express = require("express");
 
 const bodyParser = require("body-parser");
 
+// import mongoose module
+
+const mongoose = require("mongoose");
+mongoose.connect("mongodb://127.0.0.1:27017/sportDB");
+
+// import bcrypt module
+const bcrypt = require("bcrypt");
 // create express application
 
 const app = express();
@@ -14,6 +21,26 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Security configuration
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+
+    "Origin, Accept, Content-Type, X-Requested-with, Authorization, expiresIn"
+  );
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+
+    "GET, POST, DELETE, PATCH, PUT"
+  );
+
+  next();
+});
 // Static Data
 let matchesData = [
   { id: 1, teamOne: "EST", teamTwo: "CA", scoreOne: 1, scoreTwo: 1 },
@@ -76,100 +103,153 @@ let teamData = [
     teamOwner: "person6",
   },
 ];
+
+//Models Importation
+
+const Match = require("./models/match");
+const Player = require("./models/player");
+const User = require("./models/user");
+const Team = require("./models/team");
+
 // Business Logic : Get All Matches
 app.get("/matches", (req, res) => {
   console.log("Here into BL : Get All Matches");
-  res.json({ matches: matchesData });
+  // res.json({ matches: matchesData });
+  Match.find().then((docs) => {
+    res.json({ matches: docs });
+  });
 });
 
 // Business Logic : Get Match By ID
 app.get("/matches/:id", (req, res) => {
   console.log("Here into BL : Get Match By ID");
-  let matchId = req.params.id;
+  // let matchId = req.params.id;
+
   // for (let i = 0; i < matchesData.length; i++) {
   //   if (matchesData[i].id == matchId) {
   //     res.json({ match: matchesData[i] });
   //   }
   // }
 
-  let findedMatch = matchesData.find((obj) => {
-    return obj.id == matchId;
+  // let findedMatch = matchesData.find((obj) => {
+  //   return obj.id == matchId;
+  // });
+  // res.json({ match: findedMatch });
+
+  Match.findById(req.params.id).then((doc) => {
+    res.json({ match: doc });
   });
-  res.json({ match: findedMatch });
 });
 
 // Business Logic : Add Match
 app.post("/matches", (req, res) => {
   console.log("Here into BL : Add Match ");
-  let obj = req.body;
-  console.log("here object from FE", obj);
-  matchesData.push(obj);
+  let obj = new Match(req.body);
+  obj.save();
   res.json({ msg: "object added with success" });
+  // console.log("here object from FE", obj);
+  // matchesData.push(obj);
+  // res.json({ msg: "object added with success" });
 });
 // Business Logic : Delete Match
 
 app.delete("/matches/:id", (req, res) => {
   console.log("Here into BL : Delete Match ");
   let matchId = req.params.id;
-  for (let i = 0; i < matchesData.length; i++) {
-    if (matchesData[i].id == matchId) {
-      matchesData.splice(i, 1);
-      beak;
+  // for (let i = 0; i < matchesData.length; i++) {
+  //   if (matchesData[i].id == matchId) {
+  //     matchesData.splice(i, 1);
+  //     beak;
+  //   }
+  // }
+  // res.json({ msg: "deleted with success" });
+
+  Match.deleteOne({ _id: matchId }).then((deleteResponse) => {
+    console.log("here response after delete", deleteResponse);
+    if (deleteResponse.deletedCount == 1) {
+      res.json({ msg: "Deleted With Success" });
+    } else {
+      res.json({ msg: "Error" });
     }
-  }
-  res.json({ msg: "deleted with success" });
+  });
 });
 // Business Logic : Edit Match
 
 app.put("/matches", (req, res) => {
   console.log("Here into BL : Edit Match ");
   let obj = req.body;
-  console.log("here object from FE", obj);
-  for (let i = 0; i < matchesData.length; i++) {
-    if (matchesData[i].id == obj.id) {
-      matchesData[i] = obj;
-      break;
+  // console.log("here object from FE", obj);
+  // for (let i = 0; i < matchesData.length; i++) {
+  //   if (matchesData[i].id == obj.id) {
+  //     matchesData[i] = obj;
+  //     break;
+  //   }
+  // }
+  // res.json({ editedMatch: true });
+
+  Match.updateOne({ _id: req.body._id }, obj).then((updateResponse) => {
+    console.log("here response after update", updateResponse);
+    if (updateResponse.nModified == 1) {
+      res.json({ isUpdated: true });
+    } else {
+      res.json({ isUpdated: false });
     }
-  }
-  res.json({ editedMatch: true });
+  });
 });
 
 // Business Logic : Get All Teams
 
 app.get("/teams", (req, res) => {
   console.log("Here into BL : Get All Teams");
-  res.json({ teams: teamData });
+  // res.json({ teams: teamData });
+  Team.find().then((docs) => {
+    res.json({ teams: docs });
+  });
 });
 
 // Business Logic : Get Team By ID
 
 app.get("/teams/:id", (req, res) => {
   console.log("Here into BL : Get Team By ID");
-  let teamId = req.params.id;
-  let findedTeam = teamData.find((obj) => {
-    return obj.id == teamId;
+  // let teamId = req.params.id;
+  // let findedTeam = teamData.find((obj) => {
+  //   return obj.id == teamId;
+  // });
+  // res.json({ team: findedTeam });
+
+  Team.findById(req.params.id).then((doc) => {
+    res.json({ team: doc });
   });
-  res.json({ team: findedTeam });
 });
 // Business Logic : Delete Team By ID
 app.delete("/teams/:id", (req, res) => {
   console.log("Here into BL : Delete Team By ID");
   let teamId = req.params.id;
-  for (let i = 0; i < teamData.length; i++) {
-    if (teamData[i].id == teamId) {
-      teamData.splice(i, 1);
-      break;
+  // for (let i = 0; i < teamData.length; i++) {
+  //   if (teamData[i].id == teamId) {
+  //     teamData.splice(i, 1);
+  //     break;
+  //   }
+  // }
+  // res.json({ msg: "deleted with success" });
+  Team.deleteOne({ _id: teamId }).then((deletedItem) => {
+    console.log("here response after delete", deletedItem);
+    if (deletedItem.deletedCount == 1) {
+      res.json({ msg: "deleted with success" });
+    } else {
+      res.json({ msg: "error" });
     }
-  }
-  res.json({ msg: "deleted with success" });
+  });
 });
 
 // Business Logic : Add Team
 app.post("/teams", (req, res) => {
   console.log("Here into BL : Add Team");
-  let obj = req.body;
-  console.log("Here object from FE");
-  teamData.push(obj);
+  let obj = new Team(req.body);
+  // console.log("Here object from FE");
+  // teamData.push(obj);
+  // res.json({ msg: "Added with success" });
+  obj.save();
   res.json({ msg: "Added with success" });
 });
 
@@ -177,51 +257,78 @@ app.post("/teams", (req, res) => {
 app.put("/teams", (req, res) => {
   console.log("Here into BL : edit Team");
   let obj = req.body;
-  console.log("here object from FE", obj);
-  for (let i = 0; i < teamData.length; i++) {
-    if (teamData[i].id == obj.id) {
-      teamData[i] = obj;
+  // console.log("here object from FE", obj);
+  // for (let i = 0; i < teamData.length; i++) {
+  //   if (teamData[i].id == obj.id) {
+  //     teamData[i] = obj;
+  //   }
+  // }
+  // res.json({ msg: "Edited with success" });
+
+  Team.updateOne({ _id: req.body._id }, obj).then((updatedResponse) => {
+    console.log("here response after undate", updatedResponse);
+    if (updatedResponse.nModified == 1) {
+      res.json({ isUpdated: true });
+    } else {
+      res.json({ isUpdated: false });
     }
-  }
-  res.json({ msg: "Edited with success" });
+  });
 });
 
 // Business Logic : Get All Players
 app.get("/players", (req, res) => {
   console.log("Here into BL : Get All Players");
-  res.json({ players: playersData });
+  // res.json({ players: playersData });
+
+  Player.find().then((docs) => {
+    res.json({ players: docs });
+  });
 });
 
 // Business Logic : Get Player By ID
 
 app.get("/players/:id", (req, res) => {
   console.log("Here into BL : Get Player By ID");
-  let playerId = req.params.id;
-  let findedPlayer = playersData.find((obj) => {
-    return obj.id == playerId;
+  // let playerId = req.params.id;
+  // let findedPlayer = playersData.find((obj) => {
+  //   return obj.id == playerId;
+  // });
+  // res.json({ player: findedPlayer });
+
+  Player.findById(req.params.id).then((doc) => {
+    res.json({ player: doc });
   });
-  res.json({ player: findedPlayer });
 });
 
 // Business Logic : Delete Player By ID
 
 app.delete("/players/:id", (req, res) => {
   console.log("Here into BL : Delete Player By ID");
-  let playerId = req.params.id;
-  for (let i = 0; i < playersData.length; i++) {
-    if (playersData[i].id == playerId) {
-      playersData.splice(i, 1);
+  // let playerId = req.params.id;
+  // for (let i = 0; i < playersData.length; i++) {
+  //   if (playersData[i].id == playerId) {
+  //     playersData.splice(i, 1);
+  //   }
+  // }
+  // res.json({ msg: "deleted with success" });
+  Player.deleteOne({ _id: req.params.id }).then((deletedResponse) => {
+    console.log("here response after delete", deletedResponse);
+    if (deletedResponse.deletedCount == 1) {
+      res.json({ msg: "deleted with success" });
+    } else {
+      res.json({ msg: "error" });
     }
-  }
-  res.json({ msg: "deleted with success" });
+  });
 });
 
 // Business Logic : Add player
 
 app.post("/players", (req, res) => {
   console.log("Here into BL : Add Player");
-  let obj = req.body;
-  playersData.push(obj);
+  let obj = new Player(req.body);
+  // playersData.push(obj);
+  // res.json({ msg: "added with success" });
+  obj.save();
   res.json({ msg: "added with success" });
 });
 
@@ -229,23 +336,80 @@ app.post("/players", (req, res) => {
 app.put("/players", (req, res) => {
   console.log("Here into BL : Edit Player");
   let obj = req.body;
-  for (let i = 0; i < playersData.length; i++) {
-    if (playersData[i].id == obj.id) {
-      playersData[i] = obj;
+  // for (let i = 0; i < playersData.length; i++) {
+  //   if (playersData[i].id == obj.id) {
+  //     playersData[i] = obj;
+  //   }
+  // }
+  // res.json({ msg: "edited with success" });
+  Player.updateOne({ _id: obj._id }, obj).then((updatedResponse) => {
+    console.log("here response after update", updatedResponse);
+    if (updatedResponse.nModified == 1) {
+      res.json({ isUpdated: true });
+    } else {
+      res.json({ isUpdated: false });
     }
-  }
-  res.json({ msg: "edited with success" });
+  });
 });
 
 // Business Logic : login
 
 app.post("/users/login", (req, res) => {
-  console.log("Here into BL : login");
+  console.log("Here into BL : login", req.body);
+  // User.findOne({ email: req.body.email, password: req.body.password }).then(
+  //   (doc) => {
+  //     console.log("here response of findOne", doc);
+  //     if (doc) {
+  //       res.json({ msg: true });
+  //     } else {
+  //       res.json({ msg: false });
+  //     }
+  //   }
+  // );
+  let result;
+  User.findOne({ email: req.body.email })
+    .then((doc) => {
+      console.log("here finded user by email", doc);
+      if (!doc) {
+        return res.json({ msg: "please check your email" });
+      }
+      result = doc;
+      return bcrypt.compare(req.body.password, doc.password);
+    })
+    .then((pwdCompare) => {
+      console.log("here pwdCompare", pwdCompare);
+      if (pwdCompare) {
+        res.json({
+          msg: "Welcome",
+          firstName: result.firstName,
+          lastName: result.lastName,
+          id: result._id,
+        });
+      } else {
+        res.json({ msg: "please check your paswword" });
+      }
+    });
 });
 
 // Business Logic : signup
 app.post("/users/subscription", (req, res) => {
-  console.log("Here into BL : signup");
+  console.log("Here into BL : signup", req.body);
+  bcrypt.hash(req.body.password, 8).then((cryptedPwd) => {
+    console.log("here crypted pwd", cryptedPwd);
+    req.body.password = cryptedPwd;
+    let user = new User(req.body);
+    user.save();
+    res.json({ msg: "Added with success" });
+  });
+});
+
+// Business Logic : get all users
+
+app.get("/users", (req, res) => {
+  console.log("here into BL : get all users");
+  User.find().then((docs) => {
+    res.json({ users: docs });
+  });
 });
 
 // make app importable from another files

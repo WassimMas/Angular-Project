@@ -11,23 +11,23 @@
   </thead>
   <tbody>
     <tr *ngFor="let match of matches">
-      <th scope="row">{{ match.id }}</th>
+      <th scope="row">{{ match._id }}</th>
       <td>{{ match.teamOne }}</td>
       <td>{{ match.teamTwo }}</td>
       <td>{{ match.scoreOne }}</td>
       <td>{{ match.scoreTwo }}</td>
       <td>
-        <button class="btn btn-info" (click)="goToDisplay(match.id)">
+        <button class="btn btn-info" (click)="goToDisplay(match._id)">
           Display
         </button>
         <button
           class="btn btn-warning"
           style="margin-left: 5px; margin-right: 5px"
-          (click)="goToEdit(match.id)"
+          (click)="goToEdit(match._id)"
         >
           Edit
         </button>
-        <button class="btn btn-danger" (click)="delete(match.id)">
+        <button class="btn btn-danger" (click)="delete(match._id)">
           Delete
         </button>
       </td>

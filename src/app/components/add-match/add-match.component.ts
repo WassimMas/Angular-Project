@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MatchService } from 'src/app/services/match.service';
 
 @Component({
@@ -13,12 +14,15 @@ export class AddMatchComponent implements OnInit {
   // id form
   AddMatchForm!: FormGroup;
 
-  constructor(private matchService: MatchService) {}
+  constructor(private matchService: MatchService, private router: Router) {}
 
   ngOnInit(): void {}
 
   addMatch() {
     console.log(this.match);
-    this.matchService.addMatch(this.match).subscribe();
+    this.matchService.addMatch(this.match).subscribe((result: any) => {
+      console.log(result.msg);
+      this.router.navigate(['/dashboard']);
+    });
   }
 }
