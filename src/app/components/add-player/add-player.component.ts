@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { PlayerService } from 'src/app/services/player.service';
 
 @Component({
   selector: 'app-add-player',
@@ -11,10 +13,15 @@ export class AddPlayerComponent implements OnInit {
   player: any = {};
   // id form
   AddPlayerForm!: FormGroup;
-  constructor() {}
+  constructor(private pS: PlayerService, private router: Router) {}
 
   ngOnInit(): void {}
+
   addPlayer() {
     console.log(this.player);
+    this.pS.addPlayer(this.player).subscribe((result: any) => {
+      console.log(result.msg);
+      this.router.navigate(['/dashboard']);
+    });
   }
 }

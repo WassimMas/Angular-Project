@@ -14,6 +14,8 @@ import { PlayerInfoComponent } from './components/player-info/player-info.compon
 import { TeamInfoComponent } from './components/team-info/team-info.component';
 import { EditMatchComponent } from './components/edit-match/edit-match.component';
 import { PlayersComponent } from './components/players/players.component';
+import { PlayerTableComponent } from './components/player-table/player-table.component';
+import { EditPlayerComponent } from './components/edit-player/edit-player.component';
 
 const routes: Routes = [
   // http://localhost:4200 : url de base
@@ -50,6 +52,9 @@ const routes: Routes = [
 
   // http://localhost:4200/add-team : display edit-match
   { path: 'players', component: PlayersComponent },
+
+  { path: 'player-table', component: PlayerTableComponent },
+  { path: 'edit-player/:id', component: EditPlayerComponent },
 ];
 
 @NgModule({

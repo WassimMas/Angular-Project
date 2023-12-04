@@ -20,6 +20,9 @@ export class MatchInfoComponent implements OnInit {
   ngOnInit(): void {
     this.id = this.activatedRoute.snapshot.paramMap.get('id');
     this.matches = matchesData;
-    this.matchService.getMatchById(this.id).subscribe();
+    this.matchService.getMatchById(this.id).subscribe((res) => {
+      console.log('here response from BE');
+      this.match = res.match;
+    });
   }
 }

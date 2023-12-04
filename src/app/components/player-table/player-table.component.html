@@ -17,16 +17,19 @@
       <td>{{ player.age }}</td>
       <td>{{ player.number }}</td>
       <td>
-        <button class="btn btn-info" (click)="displayPlayer(player.id)">
+        <button class="btn btn-info" (click)="displayPlayer(player._id)">
           Display
         </button>
         <button
           class="btn btn-warning"
           style="margin-left: 5px; margin-right: 5px"
+          (click)="editPlayer(player._id)"
         >
           Edit
         </button>
-        <button class="btn btn-danger">Delete</button>
+        <button class="btn btn-danger" (click)="deletePlayer(player._id)">
+          Delete
+        </button>
       </td>
     </tr>
   </tbody>

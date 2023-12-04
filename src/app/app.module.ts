@@ -33,6 +33,7 @@ import { AstrixPipe } from './pipes/astrix.pipe';
 import { PlayersComponent } from './components/players/players.component';
 import { PlayerComponent } from './components/player/player.component';
 import { HttpClientModule } from '@angular/common/http';
+import { EditPlayerComponent } from './components/edit-player/edit-player.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { HttpClientModule } from '@angular/common/http';
     AstrixPipe,
     PlayersComponent,
     PlayerComponent,
+    EditPlayerComponent,
   ],
   imports: [
     BrowserModule,
