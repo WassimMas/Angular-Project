@@ -9,6 +9,12 @@ const teamSchema = mongoose.Schema({
   fondation: Number,
   staduim: String,
   owner: String,
+  players: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Player",
+    },
+  ],
 });
 
 // create team Model

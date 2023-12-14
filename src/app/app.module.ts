@@ -34,6 +34,9 @@ import { PlayersComponent } from './components/players/players.component';
 import { PlayerComponent } from './components/player/player.component';
 import { HttpClientModule } from '@angular/common/http';
 import { EditPlayerComponent } from './components/edit-player/edit-player.component';
+import { WeatherComponent } from './components/weather/weather.component';
+import { TeamComponent } from './components/team/team.component';
+import { EditTeamComponent } from './components/edit-team/edit-team.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +70,9 @@ import { EditPlayerComponent } from './components/edit-player/edit-player.compon
     PlayersComponent,
     PlayerComponent,
     EditPlayerComponent,
+    WeatherComponent,
+    TeamComponent,
+    EditTeamComponent,
   ],
   imports: [
     BrowserModule,

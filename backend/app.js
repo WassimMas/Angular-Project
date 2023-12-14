@@ -13,11 +13,23 @@ mongoose.connect("mongodb://127.0.0.1:27017/sportDB");
 
 // import bcrypt module
 const bcrypt = require("bcrypt");
+// import axios module
+
+const axios = require("axios");
+
+// import multer module
+
+const multer = require("multer");
+
+// import path module
+
+const path = require("path");
+
 // create express application
 
 const app = express();
 
-// configuration
+// configuration bodyParser
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -41,6 +53,33 @@ app.use((req, res, next) => {
 
   next();
 });
+//configuration multer
+app.use("/images", express.static(path.join("backend/images")));
+
+const MIME_TYPE = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+};
+
+const storageConfig = multer.diskStorage({
+  // destination
+  destination: (req, file, cb) => {
+    const isValid = MIME_TYPE[file.mimetype];
+    let error = new Error("Mime type is invalid");
+    if (isValid) {
+      error = null;
+    }
+    cb(null, "backend/images");
+  },
+  filename: (req, file, cb) => {
+    const name = file.originalname.toLowerCase().split(" ").join("-");
+    const extension = MIME_TYPE[file.mimetype];
+    const imgName = name + "-" + Date.now() + "-crococoder-" + "." + extension;
+    cb(null, imgName);
+  },
+});
+
 // Static Data
 let matchesData = [
   { id: 1, teamOne: "EST", teamTwo: "CA", scoreOne: 1, scoreTwo: 1 },
@@ -167,9 +206,9 @@ app.delete("/matches/:id", (req, res) => {
   Match.deleteOne({ _id: matchId }).then((deleteResponse) => {
     console.log("here response after delete", deleteResponse);
     if (deleteResponse.deletedCount == 1) {
-      res.json({ msg: "Deleted With Success" });
+      res.json({ msg: true });
     } else {
-      res.json({ msg: "Error" });
+      res.json({ msg: false });
     }
   });
 });
@@ -324,12 +363,24 @@ app.delete("/players/:id", (req, res) => {
 // Business Logic : Add player
 
 app.post("/players", (req, res) => {
-  console.log("Here into BL : Add Player");
-  let obj = new Player(req.body);
-  // playersData.push(obj);
-  // res.json({ msg: "added with success" });
-  obj.save();
-  res.json({ msg: "added with success" });
+  console.log("Here into BL : Add Player", req.body);
+  Team.findById(req.body.teamId).then((team) => {
+    if (!team) {
+      return res.json({ message: "team not found" });
+    }
+    const player = new Player({
+      position: req.body.position,
+      name: req.body.name,
+      number: req.body.number,
+      age: req.body.age,
+      team: team._id,
+    });
+    player.save((err, doc) => {
+      team.players.push(player);
+      team.save();
+      res.json({ msg: "Player added with success" });
+    });
+  });
 });
 
 // Business Logic : Edit Player
@@ -392,16 +443,32 @@ app.post("/users/login", (req, res) => {
 });
 
 // Business Logic : signup
-app.post("/users/subscription", (req, res) => {
-  console.log("Here into BL : signup", req.body);
-  bcrypt.hash(req.body.password, 8).then((cryptedPwd) => {
-    console.log("here crypted pwd", cryptedPwd);
-    req.body.password = cryptedPwd;
-    let user = new User(req.body);
-    user.save();
-    res.json({ msg: "Added with success" });
-  });
-});
+app.post(
+  "/users/subscription",
+  multer({ storage: storageConfig }).single("img"),
+  (req, res) => {
+    console.log("Here into BL : signup", req.body);
+    User.findOne({ email: req.body.email }).then((doc) => {
+      if (doc) {
+        res.json({ msg: "Oops email exist!" });
+      } else {
+        bcrypt.hash(req.body.pwd, 8).then((cryptedPwd) => {
+          console.log("here crypted pwd", cryptedPwd);
+          req.body.pwd = cryptedPwd;
+          req.body.avatar = `http://localhost:3000/images/${req.file.filename}`;
+          let user = new User(req.body);
+          user.save((err, doc) => {
+            if (err) {
+              res.json({ msg: "Failed" });
+            } else {
+              res.json({ msg: "Added with success" });
+            }
+          });
+        });
+      }
+    });
+  }
+);
 
 // Business Logic : get all users
 
@@ -410,6 +477,36 @@ app.get("/users", (req, res) => {
   User.find().then((docs) => {
     res.json({ users: docs });
   });
+});
+
+// Business Logic : Weather
+app.post("/weather", (req, res) => {
+  console.log("here into BL weather", req.body);
+  // let key = "eb30405ada47bad2baf56405303e85b9";
+  let key = "62ee756a34835483299877a61961cafb";
+  let apiURL = `https://api.openweathermap.org/data/2.5/weather?q=${req.body.cityName}&appid=${key}`;
+  axios.get(apiURL).then((response) => {
+    console.log("here API response", response.data);
+    let weatherToSend = {
+      temperature: response.data.main.temp,
+      pressure: response.data.main.pressure,
+      humidity: response.data.main.humidity,
+      speed: response.data.wind.speed,
+      icon: `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`,
+    };
+    res.json({ result: weatherToSend });
+  });
+});
+// Business Logic: Get All Team Information
+
+app.get("/teams/:teamId/info", (req, res) => {
+  console.log("Here into BL : Get All Team Infos", req.params.teamId);
+  Team.findOne({ _id: req.params.teamId })
+    .populate("players")
+    .then((docs) => {
+      console.log("here teams", docs);
+      res.json({ x: docs });
+    });
 });
 
 // make app importable from another files

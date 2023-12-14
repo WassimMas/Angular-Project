@@ -9,6 +9,10 @@ const playerSchema = mongoose.Schema({
   position: String,
   age: Number,
   number: Number,
+  team: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Team",
+  },
 });
 
 // create Player Model

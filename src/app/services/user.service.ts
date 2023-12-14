@@ -11,8 +11,19 @@ export class UserService {
     return this.httpClient.post(this.userUrl + '/login', user);
   }
 
-  signup(user: any) {
-    return this.httpClient.post(this.userUrl + '/subscription', user);
+  signup(user: any, img: File) {
+    let formData = new FormData();
+    formData.append('firstName', user.firstName);
+    formData.append('lastName', user.lastName);
+    formData.append('email', user.email);
+    formData.append('pwd', user.pwd);
+    formData.append('role', user.role);
+    formData.append('img', img);
+
+    return this.httpClient.post<{ msg: any }>(
+      this.userUrl + '/subscription',
+      formData
+    );
   }
 
   editProfile(user: any) {

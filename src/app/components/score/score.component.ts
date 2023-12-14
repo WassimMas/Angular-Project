@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatchService } from 'src/app/services/match.service';
 
 @Component({
   selector: 'app-score',
@@ -7,7 +8,8 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ScoreComponent implements OnInit {
   @Input() matchInput: any;
-  constructor() {}
+  @Output() newMatches: EventEmitter<any> = new EventEmitter();
+  constructor(private matchService: MatchService) {}
 
   ngOnInit(): void {}
 
@@ -29,5 +31,14 @@ export class ScoreComponent implements OnInit {
     } else {
       return '(draw)';
     }
+  }
+  deleteMatche(id: any) {
+    this.matchService.deleteMatch(id).subscribe((result) => {
+      console.log('Here result from BE', result.msg);
+      this.matchService.getAllMatches().subscribe((data) => {
+        console.log('Here data from BE', data.matches);
+        this.newMatches.emit(data.matches);
+      });
+    });
   }
 }

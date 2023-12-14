@@ -133,6 +133,23 @@
         <div *ngIf="signupForm.controls['confirmPwd'].errors?.['required']">
           password is required
         </div>
+        <button
+          type="button"
+          (click)="filePicker.click()"
+          class="btn btnsuccess"
+        >
+          Sélectionner image
+        </button>
+        <div class="form-group">
+          <input
+            style="visibility: hidden"
+            type="file"
+            class="form-control"
+            #filePicker
+            (change)="onImageSelected($event)"
+          />
+        </div>
+        <img [src]="imagePreview" />
 
         <div class="form-group">
           <input

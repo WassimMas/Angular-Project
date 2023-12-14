@@ -17,5 +17,5 @@
 </div>
 
 <div *ngFor="let m of matches" style="margin-top: 100px">
-  <app-score [matchInput]="m"></app-score>
+  <app-score [matchInput]="m" (newMatches)="updateMatches($event)"></app-score>
 </div>

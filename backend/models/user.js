@@ -8,6 +8,8 @@ const userSchema = mongoose.Schema({
   lastName: String,
   email: String,
   password: String,
+  role: String,
+  avatar: String,
 });
 
 // creation User Model

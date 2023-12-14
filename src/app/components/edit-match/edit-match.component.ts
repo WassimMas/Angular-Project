@@ -14,6 +14,7 @@ export class EditMatchComponent implements OnInit {
   match: any = {};
   matches: any = [];
   id: any;
+  error: any;
   constructor(
     private activatedRoute: ActivatedRoute,
     private matchService: MatchService,
@@ -32,6 +33,8 @@ export class EditMatchComponent implements OnInit {
       console.log('here object from component :', res.isUpdated);
       if (res.isUpdated) {
         this.router.navigate(['/dashboard']);
+      } else {
+        this.error = 'error in editing';
       }
     });
   }

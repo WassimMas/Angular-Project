@@ -16,6 +16,8 @@ import { EditMatchComponent } from './components/edit-match/edit-match.component
 import { PlayersComponent } from './components/players/players.component';
 import { PlayerTableComponent } from './components/player-table/player-table.component';
 import { EditPlayerComponent } from './components/edit-player/edit-player.component';
+import { WeatherComponent } from './components/weather/weather.component';
+import { EditTeamComponent } from './components/edit-team/edit-team.component';
 
 const routes: Routes = [
   // http://localhost:4200 : url de base
@@ -25,6 +27,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   // http://localhost:4200/subscription : display signup
   { path: 'subscription', component: SignupComponent },
+  { path: 'signupAdmin', component: SignupComponent },
   // http://localhost:4200/matches : display matches
   { path: 'matches', component: MatchesComponent },
   // http://localhost:4200/dashboard : display dashboard
@@ -55,6 +58,8 @@ const routes: Routes = [
 
   { path: 'player-table', component: PlayerTableComponent },
   { path: 'edit-player/:id', component: EditPlayerComponent },
+  { path: 'SearchWeather', component: WeatherComponent },
+  { path: 'editTeam/:id', component: EditTeamComponent },
 ];
 
 @NgModule({

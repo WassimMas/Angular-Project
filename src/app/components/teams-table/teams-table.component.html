@@ -11,17 +11,21 @@
   </thead>
   <tbody>
     <tr *ngFor="let team of teams">
-      <th scope="row">{{ team.id }}</th>
-      <td>{{ team.teamName }}</td>
-      <td>{{ team.teamFondation }}</td>
+      <th scope="row">{{ team._id }}</th>
+      <td>{{ team.name }}</td>
+      <td>{{ team.fondation }}</td>
       <td>{{ team.staduim }}</td>
-      <td>{{ team.teamOwner }}</td>
+      <td>{{ team.owner }}</td>
       <td>
-        <button class="btn btn-info" (click)="displayTeam(team.id)">
+        <button class="btn btn-info" (click)="displayTeam(team._id)">
           Display
         </button>
-        <button class="btn btn-warning">Edit</button>
-        <button class="btn btn-danger">Delete</button>
+        <button class="btn btn-warning" (click)="editTeam(team._id)">
+          Edit
+        </button>
+        <button class="btn btn-danger" (click)="deleteTeam(team._id)">
+          Delete
+        </button>
       </td>
     </tr>
   </tbody>

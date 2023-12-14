@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { matchesData } from 'src/app/data/data';
+
 import { MatchService } from 'src/app/services/match.service';
 
 @Component({
@@ -25,8 +25,10 @@ export class MatchesTableComponent implements OnInit {
   delete(id: number) {
     console.log(`here object number ${id} deleted`);
     this.matchService.deleteMatch(id).subscribe((res) => {
-      console.log('here response from component', res.msg);
-      this.getAllMatches();
+      console.log('here response from BE', res.msg);
+      if (res.msg) {
+        this.getAllMatches();
+      }
     });
   }
 

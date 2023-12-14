@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { matchesData } from 'src/app/data/data';
+import { MatchService } from 'src/app/services/match.service';
 
 @Component({
   selector: 'app-matches',
@@ -9,9 +10,16 @@ import { matchesData } from 'src/app/data/data';
 export class MatchesComponent implements OnInit {
   matches: any = [];
   m: any = {};
-  constructor() {}
+  constructor(private matchService: MatchService) {}
 
   ngOnInit(): void {
-    this.matches = matchesData;
+    // this.matches = matchesData;
+    this.matchService.getAllMatches().subscribe((data) => {
+      console.log('here data from BE', data.matches);
+      this.matches = data.matches;
+    });
+  }
+  updateMatches(T: any) {
+    this.matches = T;
   }
 }
