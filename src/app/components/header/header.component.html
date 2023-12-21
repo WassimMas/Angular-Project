@@ -46,11 +46,26 @@
                     >Add Player</a
                   >
                   <a class="dropdown-item" routerLink="add-team">Add team</a>
+                  <a class="dropdown-item" routerLink="addStadium"
+                    >Add stadium</a
+                  >
                 </div>
               </div>
             </li>
-            <li><a routerLink="login" class="nav-link">Login</a></li>
-            <li><a routerLink="subscription" class="nav-link">SignUp</a></li>
+            <li *ngIf="isLoggedIn()">
+              <a class="nav-link"
+                >WELCOME {{ user.firstName }} {{ user.lastName }}</a
+              >
+            </li>
+            <li *ngIf="!isLoggedIn()">
+              <a routerLink="login" class="nav-link">Login</a>
+            </li>
+            <li *ngIf="!isLoggedIn()">
+              <a routerLink="subscription" class="nav-link">SignUp</a>
+            </li>
+            <li *ngIf="isLoggedIn()">
+              <a class="nav-link" (click)="logout()">Logout</a>
+            </li>
           </ul>
         </nav>
 

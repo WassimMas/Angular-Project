@@ -23,7 +23,7 @@
         role="tab"
         aria-controls="home"
         aria-selected="true"
-        >Matchs</a
+        >Matches</a
       >
     </li>
     <li class="nav-item">
@@ -48,6 +48,18 @@
         aria-controls="contact"
         aria-selected="false"
         >Teams</a
+      >
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        id="contact-tab"
+        data-toggle="tab"
+        href="#stadia"
+        role="tab"
+        aria-controls="contact"
+        aria-selected="false"
+        >Stadia</a
       >
     </li>
   </ul>
@@ -75,6 +87,14 @@
       aria-labelledby="contact-tab"
     >
       <app-teams-table></app-teams-table>
+    </div>
+    <div
+      class="tab-pane fade"
+      id="stadia"
+      role="tabpanel"
+      aria-labelledby="contact-tab"
+    >
+      <app-stadiums-table></app-stadiums-table>
     </div>
   </div>
 </div>

@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const teamSchema = mongoose.Schema({
   name: String,
   fondation: Number,
-  staduim: String,
+
   owner: String,
   players: [
     {
@@ -15,6 +15,10 @@ const teamSchema = mongoose.Schema({
       ref: "Player",
     },
   ],
+  stadium: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Stadium",
+  },
 });
 
 // create team Model

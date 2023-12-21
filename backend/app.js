@@ -24,6 +24,13 @@ const multer = require("multer");
 // import path module
 
 const path = require("path");
+// import jsonwebtoken module
+const jwt = require("jsonwebtoken");
+
+// import express-session module
+const session = require("express-session");
+// import cors module
+const cors = require("cors");
 
 // create express application
 
@@ -79,6 +86,15 @@ const storageConfig = multer.diskStorage({
     cb(null, imgName);
   },
 });
+// Session Configuration
+const secretKey = "croco2023";
+app.use(
+  session({
+    secret: secretKey,
+  })
+);
+// Cors Configuration
+app.use(cors());
 
 // Static Data
 let matchesData = [
@@ -149,6 +165,7 @@ const Match = require("./models/match");
 const Player = require("./models/player");
 const User = require("./models/user");
 const Team = require("./models/team");
+const Stadium = require("./models/stadium");
 
 // Business Logic : Get All Matches
 app.get("/matches", (req, res) => {
@@ -241,9 +258,12 @@ app.put("/matches", (req, res) => {
 app.get("/teams", (req, res) => {
   console.log("Here into BL : Get All Teams");
   // res.json({ teams: teamData });
-  Team.find().then((docs) => {
-    res.json({ teams: docs });
-  });
+  Team.find()
+    .populate("players")
+    .populate("stadium")
+    .then((docs) => {
+      res.json({ teams: docs });
+    });
 });
 
 // Business Logic : Get Team By ID
@@ -283,13 +303,29 @@ app.delete("/teams/:id", (req, res) => {
 
 // Business Logic : Add Team
 app.post("/teams", (req, res) => {
-  console.log("Here into BL : Add Team");
-  let obj = new Team(req.body);
-  // console.log("Here object from FE");
-  // teamData.push(obj);
-  // res.json({ msg: "Added with success" });
-  obj.save();
-  res.json({ msg: "Added with success" });
+  console.log("Here into BL : Add Team", req.body);
+  Stadium.findById(req.body.sId).then((stadium) => {
+    console.log("here founded stadium", stadium);
+    if (!stadium) {
+      res.json({ msg: "Stadium not found" });
+    } else {
+      let team = new Team({
+        name: req.body.name,
+        owner: req.body.owner,
+        fondation: req.body.fondation,
+        stadium: stadium._id,
+      });
+      team.save((err, doc) => {
+        if (err) {
+          res.json({ msg: "Error" });
+        } else {
+          stadium.team = doc._id;
+          stadium.save();
+          res.json({ msg: "Added with success" });
+        }
+      });
+    }
+  });
 });
 
 // Business Logic : Edit Team
@@ -407,39 +443,38 @@ app.put("/players", (req, res) => {
 
 app.post("/users/login", (req, res) => {
   console.log("Here into BL : login", req.body);
-  // User.findOne({ email: req.body.email, password: req.body.password }).then(
-  //   (doc) => {
-  //     console.log("here response of findOne", doc);
-  //     if (doc) {
-  //       res.json({ msg: true });
-  //     } else {
-  //       res.json({ msg: false });
-  //     }
-  //   }
-  // );
-  let result;
-  User.findOne({ email: req.body.email })
-    .then((doc) => {
-      console.log("here finded user by email", doc);
-      if (!doc) {
-        return res.json({ msg: "please check your email" });
-      }
+  let result = {};
+  User.findOne({ email: req.body.email }).then((doc) => {
+    console.log("here finded user by email", doc);
+    if (!doc) {
+      return res.json({ msg: "please check your email" });
+    } else {
       result = doc;
-      return bcrypt.compare(req.body.password, doc.password);
-    })
-    .then((pwdCompare) => {
-      console.log("here pwdCompare", pwdCompare);
-      if (pwdCompare) {
-        res.json({
-          msg: "Welcome",
-          firstName: result.firstName,
-          lastName: result.lastName,
-          id: result._id,
-        });
-      } else {
-        res.json({ msg: "please check your paswword" });
-      }
-    });
+      console.log("Result", result);
+      bcrypt.compare(req.body.pwd, doc.pwd).then((pwdCompare) => {
+        console.log("here pwdCompare", pwdCompare);
+        if (pwdCompare) {
+          const token = jwt.sign(
+            {
+              firstName: result.firstName,
+              lastName: result.lastName,
+              id: result._id,
+              role: result.role,
+            },
+            secretKey,
+            { expiresIn: "1h" }
+          );
+
+          res.json({
+            msg: "Welcome",
+            token: token,
+          });
+        } else {
+          res.json({ msg: "please check your paswword" });
+        }
+      });
+    }
+  });
 });
 
 // Business Logic : signup
@@ -507,6 +542,28 @@ app.get("/teams/:teamId/info", (req, res) => {
       console.log("here teams", docs);
       res.json({ x: docs });
     });
+});
+
+// Business Logic: Add Stadium
+
+app.post("/stadia", (req, res) => {
+  console.log("here into BL add stadium", req.body);
+  let stadium = new Stadium(req.body);
+  stadium.save((err, doc) => {
+    if (err) {
+      res.json({ msg: "Error" });
+    } else {
+      res.json({ msg: "Success" });
+    }
+  });
+});
+
+// Business Logic Get All Stadia
+app.get("/stadia", (req, res) => {
+  console.log("Here into BL : Get All Stadia");
+  Stadium.find().then((docs) => {
+    res.json({ stadiumsTab: docs });
+  });
 });
 
 // make app importable from another files

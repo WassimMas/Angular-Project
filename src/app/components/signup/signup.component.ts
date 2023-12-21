@@ -48,6 +48,7 @@ export class SignupComponent implements OnInit {
       .subscribe((response) => {
         console.log('Here response after signup', response.msg);
       });
+    this.router.navigate(['login']);
   }
   matchPwd() {
     let pwd = this.signupForm.value.pwd;

@@ -37,19 +37,28 @@
           <input
             type="text"
             class="form-control"
-            [(ngModel)]="team.staduim"
-            placeholder="Staduim"
-            name="c"
-          />
-        </div>
-        <div class="form-group">
-          <input
-            type="text"
-            class="form-control"
             [(ngModel)]="team.owner"
             placeholder="Team Owner  "
             name="d"
           />
+        </div>
+
+        <div class="form-group">
+          <select
+            name=""
+            id=""
+            class="form-control"
+            (change)="selectStadium($event)"
+          >
+            <option value="">Select your stadium</option>
+            <option
+              [value]="s._id"
+              *ngFor="let s of stadiums"
+              style="color: black"
+            >
+              {{ s.name }} : {{ s.country }}
+            </option>
+          </select>
         </div>
 
         <div class="form-group">

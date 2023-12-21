@@ -8,7 +8,10 @@ export class UserService {
   userUrl: string = 'http://localhost:3000/users';
   constructor(private httpClient: HttpClient) {}
   login(user: any) {
-    return this.httpClient.post(this.userUrl + '/login', user);
+    return this.httpClient.post<{ msg: string; token: string }>(
+      this.userUrl + '/login',
+      user
+    );
   }
 
   signup(user: any, img: File) {

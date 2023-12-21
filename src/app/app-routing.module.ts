@@ -18,6 +18,7 @@ import { PlayerTableComponent } from './components/player-table/player-table.com
 import { EditPlayerComponent } from './components/edit-player/edit-player.component';
 import { WeatherComponent } from './components/weather/weather.component';
 import { EditTeamComponent } from './components/edit-team/edit-team.component';
+import { AddStaduimComponent } from './components/add-staduim/add-staduim.component';
 
 const routes: Routes = [
   // http://localhost:4200 : url de base
@@ -60,6 +61,7 @@ const routes: Routes = [
   { path: 'edit-player/:id', component: EditPlayerComponent },
   { path: 'SearchWeather', component: WeatherComponent },
   { path: 'editTeam/:id', component: EditTeamComponent },
+  { path: 'addStadium', component: AddStaduimComponent },
 ];
 
 @NgModule({

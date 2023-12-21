@@ -37,6 +37,8 @@ import { EditPlayerComponent } from './components/edit-player/edit-player.compon
 import { WeatherComponent } from './components/weather/weather.component';
 import { TeamComponent } from './components/team/team.component';
 import { EditTeamComponent } from './components/edit-team/edit-team.component';
+import { AddStaduimComponent } from './components/add-staduim/add-staduim.component';
+import { StadiumsTableComponent } from './components/stadiums-table/stadiums-table.component';
 
 @NgModule({
   declarations: [
@@ -73,6 +75,8 @@ import { EditTeamComponent } from './components/edit-team/edit-team.component';
     WeatherComponent,
     TeamComponent,
     EditTeamComponent,
+    AddStaduimComponent,
+    StadiumsTableComponent,
   ],
   imports: [
     BrowserModule,
